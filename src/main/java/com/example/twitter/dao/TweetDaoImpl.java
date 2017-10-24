@@ -9,6 +9,7 @@ import com.couchbase.client.java.query.N1qlQueryResult;
 import com.couchbase.client.java.query.N1qlQueryRow;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,19 +26,17 @@ import java.util.stream.Collectors;
 public class TweetDaoImpl implements TweetDao {
 
     private static final Logger logger = LoggerFactory.getLogger(TweetDaoImpl.class);
-    private static final String SELECT_ALL_TWEETS = "Select * from tweets";
+    private static final String SELECT_ALL_TWEETS = "Select * from `twitter`";
 
     private Bucket bucket;
 
-    private ObjectMapper mapper;
+    private Gson mapper;
 
     @Override
     public void addTweet(Tweet tweet) {
-        try {
-            bucket.insert(JsonDocument.create(String.valueOf(tweet.getId()),
-                    JsonObject.fromJson(mapper.writeValueAsString(tweet))));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+    try {
+        bucket.insert(JsonDocument.create(String.valueOf(tweet.getId()),
+                JsonObject.fromJson(mapper.toJson(tweet))));
         } catch (DocumentAlreadyExistsException e) {
             logger.info("tweet with id: " + tweet.getId() + " already exists");
         }
@@ -50,22 +49,17 @@ public class TweetDaoImpl implements TweetDao {
 
     @Override
     public void updateTweet(Tweet tweet) {
-        try {
-            bucket.upsert(JsonDocument.create(String.valueOf(tweet.getId()),
-                    JsonObject.fromJson(mapper.writeValueAsString(tweet))));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        bucket.upsert(JsonDocument.create(String.valueOf(tweet.getId()),
+                JsonObject.fromJson(mapper.toJson(tweet))));
     }
 
     @Override
     public Tweet getTweet(long id) {
-        try {
-            return mapper.readValue(bucket.get(String.valueOf(id)).content().toString(), Tweet.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        JsonDocument doc = bucket.get(String.valueOf(id));
+        if (doc != null)
+            return mapper.fromJson(doc.content().toString(), Tweet.class);
+        else
+            return null;
     }
 
     @Override
@@ -75,14 +69,7 @@ public class TweetDaoImpl implements TweetDao {
     }
 
     private Function<N1qlQueryRow, Tweet> mapQueryResultToTweet() {
-        return a -> {
-            try {
-                return mapper.readValue(a.value().get("tweets").toString(), Tweet.class);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        };
+        return a -> mapper.fromJson(a.value().get("twitter").toString(), Tweet.class);
     }
 
     @Autowired
@@ -92,7 +79,7 @@ public class TweetDaoImpl implements TweetDao {
     }
 
     @Autowired
-    public void setMapper(ObjectMapper mapper) {
+    public void setMapper(Gson mapper) {
         this.mapper = mapper;
     }
 }
