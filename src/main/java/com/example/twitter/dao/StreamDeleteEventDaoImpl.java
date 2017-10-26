@@ -7,8 +7,6 @@ import com.couchbase.client.java.error.DocumentAlreadyExistsException;
 import com.couchbase.client.java.query.N1qlQuery;
 import com.couchbase.client.java.query.N1qlQueryResult;
 import com.couchbase.client.java.query.N1qlQueryRow;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +15,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.social.twitter.api.StreamDeleteEvent;
 import org.springframework.stereotype.Repository;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -38,7 +35,7 @@ public class StreamDeleteEventDaoImpl implements StreamDeleteEventDao {
             bucket.insert(JsonDocument.create(String.valueOf(streamDeleteEvent.getTweetId()),
                     JsonObject.fromJson(mapper.toJson(streamDeleteEvent))));
         } catch (DocumentAlreadyExistsException e) {
-            logger.info("delete event with tweetId: " + streamDeleteEvent.getTweetId() + " already exists");
+            logger.warn("delete event with tweetId: " + streamDeleteEvent.getTweetId() + " already exists");
         }
 
     }

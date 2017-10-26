@@ -10,7 +10,6 @@ public class TwitterApplication {
 
 	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(TwitterApplication.class, args);
-		//MessageConsumer messageConsumer = (MessageConsumer) context.getBean("messageConsumer");
 		MessageConsumer messageConsumer = context.getBean(MessageConsumer.class);
 		messageConsumer.recieveMessage();
 	}

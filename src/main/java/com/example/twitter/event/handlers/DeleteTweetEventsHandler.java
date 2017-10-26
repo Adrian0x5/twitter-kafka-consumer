@@ -3,12 +3,17 @@ package com.example.twitter.event.handlers;
 
 import com.example.twitter.service.StreamDeleteEventService;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.twitter.api.StreamDeleteEvent;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DeleteTweetEventsHandler implements EventHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(DeleteTweetEventsHandler.class);
 
     private StreamDeleteEventService streamDeleteEventService;
 
@@ -24,7 +29,8 @@ public class DeleteTweetEventsHandler implements EventHandler {
         try {
             gson.fromJson(message, StreamDeleteEvent.class);
             return true;
-        } catch (Exception e) {
+        } catch (JsonSyntaxException e) {
+            logger.warn(e.getMessage());
             return false;
         }
     }
