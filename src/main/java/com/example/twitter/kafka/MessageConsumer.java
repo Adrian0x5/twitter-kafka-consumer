@@ -1,10 +1,9 @@
 package com.example.twitter.kafka;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class MessageConsumer {
@@ -12,13 +11,14 @@ public class MessageConsumer {
     private List<ConsumerThread> consumerThreadList;
 
     public void recieveMessage() {
-        consumerThreadList.parallelStream().forEach(thread -> new Thread(thread).start());
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+        consumerThreadList.forEach(executorService::submit);
         String line = "";
         Scanner in = new Scanner(System.in);
         while (!line.equals("exit")) {
             line = in.next();
         }
-        consumerThreadList.parallelStream().forEach(c -> c.getKafkaConsumer().wakeup());
+        executorService.shutdown();
         System.out.println("Stopping consumer... ");
     }
 

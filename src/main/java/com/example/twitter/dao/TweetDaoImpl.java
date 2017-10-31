@@ -38,7 +38,7 @@ public class TweetDaoImpl implements TweetDao {
         bucket.insert(JsonDocument.create(String.valueOf(tweet.getId()),
                 JsonObject.fromJson(mapper.toJson(tweet))));
         } catch (DocumentAlreadyExistsException e) {
-            logger.warn("tweet with id: " + tweet.getId() + " already exists");
+            logger.error("tweet with id: " + tweet.getId() + " already exists");
         }
     }
 

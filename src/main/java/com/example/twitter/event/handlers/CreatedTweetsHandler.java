@@ -29,7 +29,7 @@ public class CreatedTweetsHandler implements EventHandler {
             gson.fromJson(message, Tweet.class);
             return true;
         } catch (JsonSyntaxException e) {
-            logger.warn(e.getMessage());
+            logger.error(e.getMessage());
             return false;
         }
     }

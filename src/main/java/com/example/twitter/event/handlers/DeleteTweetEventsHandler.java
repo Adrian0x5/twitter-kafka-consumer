@@ -30,7 +30,7 @@ public class DeleteTweetEventsHandler implements EventHandler {
             gson.fromJson(message, StreamDeleteEvent.class);
             return true;
         } catch (JsonSyntaxException e) {
-            logger.warn(e.getMessage());
+            logger.error(e.getMessage());
             return false;
         }
     }

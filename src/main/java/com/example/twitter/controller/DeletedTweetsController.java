@@ -1,6 +1,6 @@
 package com.example.twitter.controller;
 
-import com.example.twitter.service.StreamDeleteEventService;
+import com.example.twitter.operations.TweetsOperations;
 import com.example.twitter.service.TweetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,8 +11,7 @@ import org.springframework.social.twitter.api.Tweet;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController("/")
@@ -24,17 +23,28 @@ public class DeletedTweetsController {
     private TweetService tweetService;
 
     @Autowired
-    private StreamDeleteEventService deleteEventService;
+    private TweetsOperations tweetsOperations;
 
     @GetMapping("getDeletedTweets")
     public ResponseEntity<List<String>> getDeletedTweets() {
-        List<String> tweets = deleteEventService.getAllStreamDeleteEvents()
+        return new ResponseEntity<>(tweetsOperations.getAllDeletedTweets()
                 .stream()
-                .map(a -> tweetService.getTweet(a.getTweetId()))
-                .filter(Objects::nonNull)
+                .sorted(Comparator.comparing(c -> c.getUser().getName()))
                 .map(this::getUserAndText)
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(tweets, HttpStatus.OK);
+                .collect(Collectors.toList()), HttpStatus.OK);
+    }
+
+    @GetMapping("getNrTweetsPerUser")
+    public ResponseEntity<Map<String, Integer>> getNrUserTweets() {
+        return new ResponseEntity<>(tweetsOperations.getNumberOfTweetsPerUser(), HttpStatus.OK);
+    }
+
+    @GetMapping("getAllTweets")
+    public ResponseEntity<List<String>> getAllTweets() {
+        return new ResponseEntity<>(tweetService.getAllTweets()
+                .stream()
+                .map(this::getUserAndText)
+                .collect(Collectors.toList()), HttpStatus.OK);
     }
 
     private String getUserAndText(Tweet tweet) {

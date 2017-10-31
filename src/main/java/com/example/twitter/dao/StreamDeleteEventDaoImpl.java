@@ -35,7 +35,7 @@ public class StreamDeleteEventDaoImpl implements StreamDeleteEventDao {
             bucket.insert(JsonDocument.create(String.valueOf(streamDeleteEvent.getTweetId()),
                     JsonObject.fromJson(mapper.toJson(streamDeleteEvent))));
         } catch (DocumentAlreadyExistsException e) {
-            logger.warn("delete event with tweetId: " + streamDeleteEvent.getTweetId() + " already exists");
+            logger.error("delete event with tweetId: " + streamDeleteEvent.getTweetId() + " already exists");
         }
 
     }
