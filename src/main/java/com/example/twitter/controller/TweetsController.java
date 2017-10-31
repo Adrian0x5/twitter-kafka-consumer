@@ -15,9 +15,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController("/")
-public class DeletedTweetsController {
+public class TweetsController {
 
-    private static final Logger logger = LoggerFactory.getLogger(DeletedTweetsController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TweetsController.class);
 
     @Autowired
     private TweetService tweetService;
