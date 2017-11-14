@@ -1,5 +1,13 @@
 package com.example.twitter.kafka;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
@@ -7,6 +15,8 @@ import java.util.concurrent.Executors;
 
 
 public class MessageConsumer {
+
+    private static final Logger logger = LoggerFactory.getLogger(MessageConsumer.class);
 
     private List<ConsumerThread> consumerThreadList;
 
@@ -19,7 +29,7 @@ public class MessageConsumer {
             line = in.next();
         }
         executorService.shutdown();
-        System.out.println("Stopping consumer... ");
+        logger.info("Stopping consumer... ");
     }
 
     public void setConsumerThreadList(List<ConsumerThread> consumerThreadList) {

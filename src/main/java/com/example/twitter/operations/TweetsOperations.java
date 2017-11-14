@@ -3,6 +3,7 @@ package com.example.twitter.operations;
 import com.example.twitter.service.StreamDeleteEventService;
 import com.example.twitter.service.TweetService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.stereotype.Component;
 
@@ -39,6 +40,11 @@ public class TweetsOperations {
     private Integer incrementNrUserTweet(Map<String, Integer> map, String user) {
         if (map.keySet().contains(user)) return map.get(user) + 1;
         else return 1;
+    }
+
+    @Cacheable(cacheNames = "getAllTweets", key = "#root.methodName")
+    public List<Tweet> getAllTweets() {
+        return tweetService.getAllTweets();
     }
 
     @Autowired

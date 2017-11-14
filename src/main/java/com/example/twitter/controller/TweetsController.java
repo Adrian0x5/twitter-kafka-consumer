@@ -1,7 +1,6 @@
 package com.example.twitter.controller;
 
 import com.example.twitter.operations.TweetsOperations;
-import com.example.twitter.service.TweetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,16 +10,15 @@ import org.springframework.social.twitter.api.Tweet;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController("/")
 public class TweetsController {
 
     private static final Logger logger = LoggerFactory.getLogger(TweetsController.class);
-
-    @Autowired
-    private TweetService tweetService;
 
     @Autowired
     private TweetsOperations tweetsOperations;
@@ -41,7 +39,7 @@ public class TweetsController {
 
     @GetMapping("getAllTweets")
     public ResponseEntity<List<String>> getAllTweets() {
-        return new ResponseEntity<>(tweetService.getAllTweets()
+        return new ResponseEntity<>(tweetsOperations.getAllTweets()
                 .stream()
                 .map(this::getUserAndText)
                 .collect(Collectors.toList()), HttpStatus.OK);
